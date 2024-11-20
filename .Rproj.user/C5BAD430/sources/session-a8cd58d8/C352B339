@@ -3,7 +3,7 @@
     "path": "~/Spotify_Analysis/.gitignore",
     "project_path": ".gitignore",
     "type": "gitignore",
-    "hash": "3185417545",
+    "hash": "369326322",
     "contents": "",
     "dirty": false,
     "created": 1732073436509.0,
@@ -12,15 +12,15 @@
     "properties": {
         "source_window_id": "",
         "Source": "Source",
-        "cursorPosition": "0,0",
+        "cursorPosition": "4,0",
         "scrollLine": "0"
     },
     "folds": "",
-    "lastKnownWriteTime": 1732073448,
+    "lastKnownWriteTime": 1732073882,
     "encoding": "UTF-8",
     "collab_server": "",
     "source_window": "",
-    "last_content_update": 1732073448675,
+    "last_content_update": 1732073882852,
     "read_only": false,
     "read_only_alternatives": []
 }
