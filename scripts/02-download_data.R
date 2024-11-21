@@ -10,14 +10,14 @@
 #     and set it up in your `.Renviron` file with the following variables:
 #       SPOTIFY_CLIENT_ID = 'YOUR_CLIENT_ID'
 #       SPOTIFY_CLIENT_SECRET = 'YOUR_CLIENT_SECRET'
-# Any other information needed? Script includes fetching Spotify audio features via Spotify API.
+# Any other information needed? None.
 
 #### Workspace setup ####
 library(tidyverse)
 library(spotifyr)
 library(arrow)
 
-#### Prepare Top 50 Data ####
+#### Obtain Top 50 Data Features ####
 # Load data
 raw_top50 <- read.csv("data/01-raw_data/top50_canada.csv")
 
@@ -53,6 +53,19 @@ top50_features_data <- raw_top50 %>%
 
 # Save the combined dataset with audio features
 saveRDS(top50_features_data, "top50_features_data.rds")
+
+#### Obtain Weather Data ####
+# To obtain the daily weather data for the cities of Toronto, Montreal, Edmonton, Calgary, 
+# Ottawa, and Vancouver, I navigated to the Government of Canada's Climate Weather website. 
+# On the site, I accessed the historical data search page at https://climate.weather.gc.ca/historical_data/search_historic_data_e.html, 
+# where I used the "Search by Proximity" feature to select each city individually. 
+# For each city, I set the date range to cover the year 2024 and chose the "daily" data interval. 
+# Specific weather stations were selected based on their relevance and proximity to city centers: 
+# "VANCOUVER HARBOUR CS" for Vancouver, "EDMONTON BLATCHFORD" for Edmonton, 
+# "CALGARY INT'L CS" for Calgary, "OTTAWA CDA RCS" for Ottawa, "TORONTO CITY" for Toronto, 
+# and "MCTAVISH" for Montreal. After configuring the settings, I executed the search by clicking "Go", 
+# then downloaded the daily weather data for each location. 
+# This dataset can be found in data/01-raw_data/weather_data.csv [in this file I added all the 6 files together]
 
 #### Save data ####
 write_csv(top50_features_data, "data/02-analysis_data/top50_features_data.csv")
