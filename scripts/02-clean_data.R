@@ -5,7 +5,7 @@
 # Contact: cristina.sulam@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: 
-#   - Install required libraries: `tidyverse`, `spotifyr`, `readr`, `dplyr`, `stringr`.
+#   - Install required libraries: `tidyverse`, `spotifyr`, `arrow`.
 #   - Obtain a Spotify API key and set it up in your `.Renviron` file with the following variables:
 #       SPOTIFY_CLIENT_ID = 'YOUR_CLIENT_ID'
 #       SPOTIFY_CLIENT_SECRET = 'YOUR_CLIENT_SECRET'
@@ -15,9 +15,7 @@
 #### Workspace setup ####
 library(tidyverse)
 library(spotifyr)
-library(readr)
-library(dplyr)
-library(stringr)
+library(arrow)
 
 #### Prepare Top 50 Data ####
 # Load data
@@ -49,7 +47,11 @@ audio_features_df <- bind_rows(audio_features_list, .id = "uri_numeric")
 
 # Merge the audio features back to the original dataset using uri_numeric
 top50_features_data <- raw_top50 %>%
-  left_join(audio_features_df, by = "uri_numeric")
+  left_join(audio_features_df, by = "uri_numeric") %>%
+  mutate(date = as.Date(date, format = "%Y-%m-%d"))
+
+# Save the combined dataset with audio features
+saveRDS(top50_features_data, "top50_features_data.rds")
 
 #### Prepare Daily Weather data ####
 # Load data
@@ -107,7 +109,7 @@ analysis_data <- merged_data_analysis %>%
     Acousticness = acousticness,
     Tempo = tempo, 
     Date = date
-  )
+  ) 
 
 # Check for missing values
 missing_values <- analysis_data %>%
@@ -116,4 +118,4 @@ missing_values <- analysis_data %>%
 #### Save data ####
 write_csv(top50_features_data, "data/02-analysis_data/top50_features_data.csv")
 write_csv(average_daily_weather, "data/02-analysis_data/average_daily_weather.csv")
-write_csv(analysis_data, "data/02-analysis_data/analysis_data.csv")
+write_parquet(analysis_data, "data/02-analysis_data/analysis_data.parquet")
