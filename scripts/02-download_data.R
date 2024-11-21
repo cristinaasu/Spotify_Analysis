@@ -51,8 +51,8 @@ top50_features_data <- raw_top50 %>%
   left_join(audio_features_df, by = "uri_numeric") %>%
   mutate(date = as.Date(date, format = "%Y-%m-%d"))
 
-# Save the combined dataset with audio features
-saveRDS(top50_features_data, "top50_features_data.rds")
+# Save using saveRDS to ensure it retains its exact structure and type for reloading in future R sessions.
+saveRDS(top50_features_data, "data/01-raw_data/top50_features_data.rds")
 
 #### Obtain Weather Data ####
 # To obtain the daily weather data for the cities of Toronto, Montreal, Edmonton, Calgary, 

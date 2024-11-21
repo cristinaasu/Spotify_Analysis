@@ -47,7 +47,7 @@ average_daily_weather <- average_daily_weather %>%
 
 #### Cleaning Analysis Dataset ####
 # Merge Top 50 and Weather Cleaned Data
-top50_features_data <-readRDS("top50_features_data.rds")
+top50_features_data <-readRDS("data/01-raw_data/top50_features_data.rds")
 
 merged_data_analysis <- top50_features_data %>%
   left_join(average_daily_weather, by = "date")
