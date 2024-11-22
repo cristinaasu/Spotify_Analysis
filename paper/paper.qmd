@@ -1,9 +1,7 @@
 ---
 title: "My title"
 subtitle: "My subtitle if needed"
-author: 
-  - First author
-  - Another author
+author: Cristina Su Lam
 thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
 date: today
 date-format: long
@@ -17,9 +15,17 @@ bibliography: references.bib
 #| include: false
 #| warning: false
 #| message: false
-
+# Load required libraries
 library(tidyverse)
-library(palmerpenguins)
+library(ggplot2)
+library(hexbin)
+library(arrow)
+```
+
+```{r}
+# Load dataset 
+analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
+              
 ```
 
 
@@ -52,7 +58,7 @@ Overview text
 	
 Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.
 
-## Outcome variables
+## Outcome variable
 
 Add graphs, tables and text. Use sub-sub-headings for each outcome variable or update the subheading to be singular.
 
@@ -61,17 +67,14 @@ Add graphs, tables and text. Use sub-sub-headings for each outcome variable or u
 Some of our data is of penguins (@fig-bills), from @palmerpenguins.
 
 ```{r}
-#| label: fig-bills
-#| fig-cap: Bills of penguins
+#| label: fig-valence
+#| fig-cap: Distribution of Valence
 #| echo: false
 
-ggplot(penguins, aes(x = island, fill = species)) +
-  geom_bar(alpha = 0.8) +
-  scale_fill_manual(values = c("darkorange","purple","cyan4"),
-                    guide = "none") +
-  theme_minimal() +
-  facet_wrap(~species, ncol = 1) +
-  coord_flip()
+ggplot(analysis_data, aes(x = Valence)) +
+  geom_histogram(binwidth = 0.05, fill = "blue", color = "black", alpha = 0.7) +
+  labs(title = "Distribution of Valence", x = "Valence", y = "Count") +
+  theme_minimal()
 ```
 
 Talk more about it.
