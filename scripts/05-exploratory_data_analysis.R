@@ -12,6 +12,7 @@
 #### Workspace setup ####
 library(tidyverse)
 library(arrow)
+library(hexbin)
 
 #### Read data ####
 analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")

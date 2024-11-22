@@ -9,8 +9,9 @@
 
 #### Workspace setup ####
 library(tidyverse)
+library(arrow)
 
-analysis_data <- read_csv("data/02-analysis_data/analysis_data.csv", show_col_types = FALSE)
+analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 
 #### Test data ####
