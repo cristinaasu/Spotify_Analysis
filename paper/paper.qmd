@@ -2,12 +2,14 @@
 title: "My title"
 subtitle: "My subtitle if needed"
 author: Cristina Su Lam
-thanks: "Code and data are available at: [https://github.com/RohanAlexander/starter_folder](https://github.com/RohanAlexander/starter_folder)."
+thanks: "Code and data are available at: https://github.com/cristinaasu/Spotify_Analysis"
 date: today
 date-format: long
 abstract: "First sentence. Second sentence. Third sentence. Fourth sentence."
-format: pdf
+toc: true
+fig_caption: yes
 number-sections: true
+format: pdf
 bibliography: references.bib
 ---
 
@@ -258,5 +260,4 @@ plot(first_model, "rhat")
 
 
 # References
-
 
