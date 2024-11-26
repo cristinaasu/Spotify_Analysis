@@ -31,7 +31,6 @@ analysis_data <- read_parquet("../data/02-analysis_data/analysis_data.parquet")
 mlm_model <- readRDS("../models/mlm_model.rds")
 ```
 
-
 # Introduction
 
 Valence, a measure of emotional tone in music, is pivotal for understanding how listeners perceive and engage with songs. Ranging from 0 (negative or sad) to 1 (positive or happy), Valence provides insights into the emotive qualities of a track. This study aims to model and predict Valence using a blend of musical features such as tempo, danceability, and acousticness, alongside contextual variables like mean temperature.
@@ -42,7 +41,7 @@ The estimand of interest is Valence, as it encapsulates the core emotional respo
 
 In this analysis, we seek to bridge the gap between musical analytics and contextual data, contributing to the broader field of musicology and data-driven sentiment analysis. By refining predictive methods, we aim to better understand the emotional landscape of modern music and its relationship with the listener's environment.
 
-[Overview paragraph
+\[Overview paragraph
 
 Estimand paragraph
 
@@ -50,7 +49,7 @@ Results paragraph
 
 Why it matters paragraph
 
-Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....]
+Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....\]
 
 # Data {#sec-data}
 
@@ -59,6 +58,7 @@ Telegraphing paragraph: The remainder of this paper is structured as follows. @s
 We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
 
 The dataset contains key variables spanning musical features, environmental data, and outcomes. Below is a summary of numerical variables:
+
 ```{r}
 #| label: tbl-summary
 #| tbl-cap: Summary Statistics
@@ -109,13 +109,14 @@ summary_table <- analysis_data %>%
   )
 kable(summary_table, format = "pipe")
 ```
+
 These metrics reveal diverse song features and moderate variability in environmental temperature, offering rich explanatory potential for Valence.
 
 ## Measurement
 
-The data used in this analysis were collected from Spotify’s public API, which provides detailed metadata for songs. Each track is associated with multiple audio features and contextual information. The data was preprocessed to ensure consistency, with missing or erroneous values removed prior to analysis.
+The data used in this analysis were collected from Spotify's public API, which provides detailed metadata for songs. Each track is associated with multiple audio features and contextual information. The data was preprocessed to ensure consistency, with missing or erroneous values removed prior to analysis.
 
-Valence (Outcome): Extracted directly from Spotify’s API, Valence is measured on a scale from 0 to 1, indicating the positivity or happiness conveyed by a song. This variable serves as the primary outcome of interest.
+Valence (Outcome): Extracted directly from Spotify's API, Valence is measured on a scale from 0 to 1, indicating the positivity or happiness conveyed by a song. This variable serves as the primary outcome of interest.
 
 Musical Features:
 
@@ -125,7 +126,7 @@ Energy: Measures the intensity and activity level of a track, combining attribut
 
 Acousticness: Represents the likelihood of a track being acoustic, with values closer to 1 reflecting higher acoustic qualities.
 
-Tempo: Captured in beats per minute (BPM), tempo describes the overall speed of a track. This feature was extracted directly from Spotify’s analysis tools.
+Tempo: Captured in beats per minute (BPM), tempo describes the overall speed of a track. This feature was extracted directly from Spotify's analysis tools.
 
 Contextual Feature:
 
@@ -133,10 +134,12 @@ Mean Temp: Weather data was integrated using external sources and mapped to list
 
 The integration of audio and contextual data allowed for a comprehensive analysis of factors influencing Valence, bridging the gap between intrinsic musical properties and external environmental conditions.
 
-[Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.]
+\[Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.\]
 
 ## Outcome variable
+
 The distribution of Valence shows a relatively uniform spread, with some concentration near the mid-range. This reflects the diversity of emotional tones in the dataset. The histogram of Valence illustrates this distribution, where most tracks lie between moderate to high levels of positivity.
+
 ```{r}
 #| label: fig-valence
 #| fig-cap: Distribution of Valence
@@ -150,11 +153,12 @@ ggplot(analysis_data, aes(x = Valence)) +
   theme_minimal()
 ```
 
-
 ## Predictor variables
+
 ### Mean Temperature
 
 The average temperature over time demonstrates a seasonal decline, ranging from approximately 25°C in the summer to below 10°C in late autumn. This variable adds a contextual layer, capturing external influences that may correlate with song Valence and listening behavior.
+
 ```{r}
 #| label: fig-temp
 #| fig-cap: Average temperature Over Time
@@ -166,10 +170,10 @@ ggplot(analysis_data, aes(x = Date, y = `Mean Temp`)) +
   labs(title = "Average Temperature Over Time", x = "Date", y = "Temperature (°C)") +
   theme_minimal()
 ```
+
 ### Tempo
-The distribution of Tempo reveals a central peak around 120 BPM, with a wider spread for slower and faster songs. This suggests a balanced mix of tempos, with a slight preference for moderate-speed tracks. Tempo’s role in influencing Valence is analyzed alongside other musical features.
 
-
+The distribution of Tempo reveals a central peak around 120 BPM, with a wider spread for slower and faster songs. This suggests a balanced mix of tempos, with a slight preference for moderate-speed tracks. Tempo's role in influencing Valence is analyzed alongside other musical features.
 
 ```{r}
 #| label: fig-tempo
@@ -195,9 +199,8 @@ Acousticness: Displays a skewed distribution, with most tracks having low acoust
 
 Each of these variables provides unique explanatory power, contributing to the overall understanding of what drives the emotional tone in music.
 
-
 ```{r}
-#| label: fig-tempo
+#| label: fig-diff
 #| fig-cap: Distribution of Tempo
 #| echo: false
 #| warning: false
@@ -217,38 +220,47 @@ analysis_data %>%
   theme(legend.position = "none")
 ```
 
-
-
-
-
-
 # Model
 
 The goal of our modelling strategy is twofold. Firstly,...
 
 Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
 
-## Model set-up
+## Model Structure
 
-Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
-
-\begin{align} 
-y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
-\mu_i &= \alpha + \beta_i + \gamma_i\\
-\alpha &\sim \mbox{Normal}(0, 2.5) \\
-\beta &\sim \mbox{Normal}(0, 2.5) \\
-\gamma &\sim \mbox{Normal}(0, 2.5) \\
-\sigma &\sim \mbox{Exponential}(1)
+```{=text}
+\begin{align}
+y_i &= \beta_0 + \beta_1 (\text{Mean Temp}_i) + \beta_2 (\text{Artist}_i) + \beta_3 (\text{Danceability}_i) \\
+&\quad + \beta_4 (\text{Energy}_i) + \beta_5 (\text{Acousticness}_i) + \beta_6 (\text{Tempo}_i) + \epsilon_i \\
+\epsilon_i &\sim \text{Normal}(0, \sigma^2)
 \end{align}
-
-We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
-
+```
+- $y_i$: 
+- $\beta_0$:
+- $\beta_1$: 
+- ... [add beta's for the other predictors]
+- ...
+- $u_{\text{pollster}}$:
+- $u_{\text{state}}$:
 
 ### Model justification
 
-We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+```{r}
+#| label: tbl-comp
+#| fig-cap: Comparison of Model Performance
+#| echo: false
+#| warning: false
+#| fig-align: center
+comparison_data <- data.frame(
+  Model = c("MLR 1", "MLR 2", "MLR 3"),
+  `# Variables` = c(6, 5, 4),
+  RMSE = c(0.0846, 0.0866, 0.2031),
+  `R-Squared` = c(0.8676, 0.8600, -1.4266),
+  check.names = FALSE
+)
 
-We can use maths by including latex between dollar signs, for instance $\theta$.
+kable(comparison_data, format = "pipe")
+```
 
 
 # Results
@@ -261,10 +273,7 @@ Our results are summarized in @tbl-modelresults.
 #| warning: false
 #| message: false
 
-library(rstanarm)
 
-first_model <-
-  readRDS(file = here::here("models/first_model.rds"))
 ```
 
 ```{r}
@@ -274,23 +283,13 @@ first_model <-
 #| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
 #| warning: false
 
-modelsummary::modelsummary(
-  list(
-    "First model" = first_model
-  ),
-  statistic = "mad",
-  fmt = 2
-)
 ```
-
-
-
 
 # Discussion
 
 ## First discussion point {#sec-first-point}
 
-If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this.
 
 ## Second discussion point
 
@@ -306,8 +305,7 @@ Weaknesses and next steps should also be included.
 
 \appendix
 
-# Appendix {-}
-
+# Appendix {.unnumbered}
 
 # Additional data details
 
@@ -317,7 +315,7 @@ Weaknesses and next steps should also be included.
 
 In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
 
-In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows...
 
 ```{r}
 #| eval: true
@@ -329,15 +327,6 @@ In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. Th
 #| fig-cap: "Examining how the model fits, and is affected by, the data"
 #| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
 
-pp_check(first_model) +
-  theme_classic() +
-  theme(legend.position = "bottom")
-
-posterior_vs_prior(first_model) +
-  theme_minimal() +
-  scale_color_brewer(palette = "Set1") +
-  theme(legend.position = "bottom") +
-  coord_flip()
 ```
 
 ## Diagnostics
@@ -356,14 +345,8 @@ posterior_vs_prior(first_model) +
 #| fig-subcap: ["Trace plot", "Rhat plot"]
 #| layout-ncol: 2
 
-plot(first_model, "trace")
-
-plot(first_model, "rhat")
 ```
 
-
-
 \newpage
-
 
 # References
