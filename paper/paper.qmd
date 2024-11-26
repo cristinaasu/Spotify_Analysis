@@ -1,0 +1,369 @@
+---
+title: "My title"
+subtitle: "My subtitle if needed"
+author: Cristina Su Lam
+thanks: "Code and data are available at: https://github.com/cristinaasu/Spotify_Analysis"
+date: today
+date-format: long
+abstract: "This analysis explores the relationship between various musical and contextual features with the emotional tone (Valence) of songs on Spotify. Using a dataset of songs with features such as tempo, danceability, and acousticness, alongside contextual data like mean temperature, we aim to predict Valence—a measure of positivity in the music. The study applies multiple linear regression models, evaluates performance metrics, and identifies influential predictors. Results show that predictors like danceability and energy strongly relate to Valence, while contextual variables like temperature also provide moderate explanatory power. These findings highlight the potential for combining musical and environmental data to analyze listener sentiment and mood-related trends in music[need to be more detail about findings]."
+toc: true
+fig_caption: yes
+number-sections: true
+format: pdf
+bibliography: references.bib
+---
+
+```{r}
+#| include: false
+#| warning: false
+#| message: false
+library(tidyverse)
+library(ggplot2)
+library(hexbin)
+library(arrow)
+library(kableExtra)
+library(knitr)
+```
+
+```{r}
+# Load dataset 
+analysis_data <- read_parquet("../data/02-analysis_data/analysis_data.parquet")
+mlm_model <- readRDS("../models/mlm_model.rds")
+```
+
+
+# Introduction
+
+Valence, a measure of emotional tone in music, is pivotal for understanding how listeners perceive and engage with songs. Ranging from 0 (negative or sad) to 1 (positive or happy), Valence provides insights into the emotive qualities of a track. This study aims to model and predict Valence using a blend of musical features such as tempo, danceability, and acousticness, alongside contextual variables like mean temperature.
+
+Music serves as a universal language, evoking emotions and creating connections. By analyzing how intrinsic musical properties interact with external factors, such as environmental conditions, we can uncover patterns that shape listener sentiment. This approach not only deepens our understanding of the factors influencing emotional tone but also offers practical applications for playlist curation and music recommendation systems.
+
+The estimand of interest is Valence, as it encapsulates the core emotional response elicited by music. Through multiple linear regression (MLR) models, we identify the most significant predictors of Valence and assess their explanatory power. This approach highlights the interplay between quantitative attributes of music and listener experiences, aiming to improve the accuracy of mood prediction models.
+
+In this analysis, we seek to bridge the gap between musical analytics and contextual data, contributing to the broader field of musicology and data-driven sentiment analysis. By refining predictive methods, we aim to better understand the emotional landscape of modern music and its relationship with the listener's environment.
+
+[Overview paragraph
+
+Estimand paragraph
+
+Results paragraph
+
+Why it matters paragraph
+
+Telegraphing paragraph: The remainder of this paper is structured as follows. @sec-data....]
+
+# Data {#sec-data}
+
+## Overview
+
+We use the statistical programming language R [@citeR].... Our data [@shelter].... Following @tellingstories, we consider...
+
+The dataset contains key variables spanning musical features, environmental data, and outcomes. Below is a summary of numerical variables:
+```{r}
+#| label: tbl-summary
+#| tbl-cap: Summary Statistics
+#| echo: false
+#| warning: false
+#| fig-align: center
+summary_table <- analysis_data %>%
+  reframe(
+    Variable = c("Valence", "Mean Temp", "Danceability", "Energy", "Acousticness", "Tempo"),
+    Mean = c(
+      mean(Valence, na.rm = TRUE),
+      mean(`Mean Temp`, na.rm = TRUE),
+      mean(Danceability, na.rm = TRUE),
+      mean(Energy, na.rm = TRUE),
+      mean(Acousticness, na.rm = TRUE),
+      mean(Tempo, na.rm = TRUE)
+    ),
+    SD = c(
+      sd(Valence, na.rm = TRUE),
+      sd(`Mean Temp`, na.rm = TRUE),
+      sd(Danceability, na.rm = TRUE),
+      sd(Energy, na.rm = TRUE),
+      sd(Acousticness, na.rm = TRUE),
+      sd(Tempo, na.rm = TRUE)
+    ),
+    Min = c(
+      min(Valence, na.rm = TRUE),
+      min(`Mean Temp`, na.rm = TRUE),
+      min(Danceability, na.rm = TRUE),
+      min(Energy, na.rm = TRUE),
+      min(Acousticness, na.rm = TRUE),
+      min(Tempo, na.rm = TRUE)
+    ),
+    Max = c(
+      max(Valence, na.rm = TRUE),
+      max(`Mean Temp`, na.rm = TRUE),
+      max(Danceability, na.rm = TRUE),
+      max(Energy, na.rm = TRUE),
+      max(Acousticness, na.rm = TRUE),
+      max(Tempo, na.rm = TRUE)
+    )
+  ) %>%
+  mutate(
+    Mean = round(Mean, 3),
+    SD = round(SD, 3),
+    Min = round(Min, 3),
+    Max = round(Max, 3)
+  )
+kable(summary_table, format = "pipe")
+```
+These metrics reveal diverse song features and moderate variability in environmental temperature, offering rich explanatory potential for Valence.
+
+## Measurement
+
+The data used in this analysis were collected from Spotify’s public API, which provides detailed metadata for songs. Each track is associated with multiple audio features and contextual information. The data was preprocessed to ensure consistency, with missing or erroneous values removed prior to analysis.
+
+Valence (Outcome): Extracted directly from Spotify’s API, Valence is measured on a scale from 0 to 1, indicating the positivity or happiness conveyed by a song. This variable serves as the primary outcome of interest.
+
+Musical Features:
+
+Danceability: Quantifies how suitable a track is for dancing, based on a combination of tempo, rhythm stability, and beat strength. Values range from 0 to 1.
+
+Energy: Measures the intensity and activity level of a track, combining attributes like loudness and dynamic range. Higher values indicate more energetic tracks.
+
+Acousticness: Represents the likelihood of a track being acoustic, with values closer to 1 reflecting higher acoustic qualities.
+
+Tempo: Captured in beats per minute (BPM), tempo describes the overall speed of a track. This feature was extracted directly from Spotify’s analysis tools.
+
+Contextual Feature:
+
+Mean Temp: Weather data was integrated using external sources and mapped to listening periods. This feature reflects the average daily temperature (°C) corresponding to the time a track was popular or listened to.
+
+The integration of audio and contextual data allowed for a comprehensive analysis of factors influencing Valence, bridging the gap between intrinsic musical properties and external environmental conditions.
+
+[Some paragraphs about how we go from a phenomena in the world to an entry in the dataset.]
+
+## Outcome variable
+The distribution of Valence shows a relatively uniform spread, with some concentration near the mid-range. This reflects the diversity of emotional tones in the dataset. The histogram of Valence illustrates this distribution, where most tracks lie between moderate to high levels of positivity.
+```{r}
+#| label: fig-valence
+#| fig-cap: Distribution of Valence
+#| echo: false
+#| warning: false
+#| fig-align: center
+
+ggplot(analysis_data, aes(x = Valence)) +
+  geom_histogram(binwidth = 0.05, fill = "blue", color = "black", alpha = 0.7) +
+  labs(x = "Valence", y = "Count") +
+  theme_minimal()
+```
+
+
+## Predictor variables
+### Mean Temperature
+
+The average temperature over time demonstrates a seasonal decline, ranging from approximately 25°C in the summer to below 10°C in late autumn. This variable adds a contextual layer, capturing external influences that may correlate with song Valence and listening behavior.
+```{r}
+#| label: fig-temp
+#| fig-cap: Average temperature Over Time
+#| echo: false
+#| warning: false
+#| fig-align: center
+ggplot(analysis_data, aes(x = Date, y = `Mean Temp`)) +
+  geom_line(color = "red") +
+  labs(title = "Average Temperature Over Time", x = "Date", y = "Temperature (°C)") +
+  theme_minimal()
+```
+### Tempo
+The distribution of Tempo reveals a central peak around 120 BPM, with a wider spread for slower and faster songs. This suggests a balanced mix of tempos, with a slight preference for moderate-speed tracks. Tempo’s role in influencing Valence is analyzed alongside other musical features.
+
+
+
+```{r}
+#| label: fig-tempo
+#| fig-cap: Distribution of Tempo
+#| echo: false
+#| warning: false
+#| fig-align: center
+ggplot(analysis_data, aes(x = Tempo)) +
+  geom_histogram(binwidth = 10, fill = "darkgreen", color = "black") +
+  labs(title = "Distribution of Tempo", x = "Tempo (BPM)", y = "Frequency") +
+  theme_minimal()
+```
+
+### Danceability, Energy, and Acousticness
+
+The comparative histograms of Danceability, Energy, and Acousticness highlight their distinct distributions:
+
+Danceability: Peaks near 0.6 to 0.8, suggesting that most songs are moderately to highly danceable.
+
+Energy: Similarly peaks in the mid-range, reflecting a tendency towards active, engaging tracks.
+
+Acousticness: Displays a skewed distribution, with most tracks having low acoustic properties, indicating a focus on electronic or produced music styles.
+
+Each of these variables provides unique explanatory power, contributing to the overall understanding of what drives the emotional tone in music.
+
+
+```{r}
+#| label: fig-tempo
+#| fig-cap: Distribution of Tempo
+#| echo: false
+#| warning: false
+#| fig-align: center
+analysis_data %>%
+  select(Danceability, Energy, Acousticness) %>%
+  pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
+  ggplot(aes(x = Value, fill = Variable)) +
+  geom_histogram(binwidth = 0.05, alpha = 0.6, position = "identity", color = "black") +
+  facet_wrap(~Variable, scales = "free") +
+  labs(
+    title = "Distribution of Danceability, Energy, and Acousticness",
+    x = "Value",
+    y = "Frequency"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
+# Model
+
+The goal of our modelling strategy is twofold. Firstly,...
+
+Here we briefly describe the Bayesian analysis model used to investigate... Background details and diagnostics are included in [Appendix -@sec-model-details].
+
+## Model set-up
+
+Define $y_i$ as the number of seconds that the plane remained aloft. Then $\beta_i$ is the wing width and $\gamma_i$ is the wing length, both measured in millimeters.  
+
+\begin{align} 
+y_i|\mu_i, \sigma &\sim \mbox{Normal}(\mu_i, \sigma) \\
+\mu_i &= \alpha + \beta_i + \gamma_i\\
+\alpha &\sim \mbox{Normal}(0, 2.5) \\
+\beta &\sim \mbox{Normal}(0, 2.5) \\
+\gamma &\sim \mbox{Normal}(0, 2.5) \\
+\sigma &\sim \mbox{Exponential}(1)
+\end{align}
+
+We run the model in R [@citeR] using the `rstanarm` package of @rstanarm. We use the default priors from `rstanarm`.
+
+
+### Model justification
+
+We expect a positive relationship between the size of the wings and time spent aloft. In particular...
+
+We can use maths by including latex between dollar signs, for instance $\theta$.
+
+
+# Results
+
+Our results are summarized in @tbl-modelresults.
+
+```{r}
+#| echo: false
+#| eval: true
+#| warning: false
+#| message: false
+
+library(rstanarm)
+
+first_model <-
+  readRDS(file = here::here("models/first_model.rds"))
+```
+
+```{r}
+#| echo: false
+#| eval: true
+#| label: tbl-modelresults
+#| tbl-cap: "Explanatory models of flight time based on wing width and wing length"
+#| warning: false
+
+modelsummary::modelsummary(
+  list(
+    "First model" = first_model
+  ),
+  statistic = "mad",
+  fmt = 2
+)
+```
+
+
+
+
+# Discussion
+
+## First discussion point {#sec-first-point}
+
+If my paper were 10 pages, then should be be at least 2.5 pages. The discussion is a chance to show off what you know and what you learnt from all this. 
+
+## Second discussion point
+
+Please don't use these as sub-heading labels - change them to be what your point actually is.
+
+## Third discussion point
+
+## Weaknesses and next steps
+
+Weaknesses and next steps should also be included.
+
+\newpage
+
+\appendix
+
+# Appendix {-}
+
+
+# Additional data details
+
+# Model details {#sec-model-details}
+
+## Posterior predictive check
+
+In @fig-ppcheckandposteriorvsprior-1 we implement a posterior predictive check. This shows...
+
+In @fig-ppcheckandposteriorvsprior-2 we compare the posterior with the prior. This shows... 
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ppcheckandposteriorvsprior
+#| layout-ncol: 2
+#| fig-cap: "Examining how the model fits, and is affected by, the data"
+#| fig-subcap: ["Posterior prediction check", "Comparing the posterior with the prior"]
+
+pp_check(first_model) +
+  theme_classic() +
+  theme(legend.position = "bottom")
+
+posterior_vs_prior(first_model) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1") +
+  theme(legend.position = "bottom") +
+  coord_flip()
+```
+
+## Diagnostics
+
+@fig-stanareyouokay-1 is a trace plot. It shows... This suggests...
+
+@fig-stanareyouokay-2 is a Rhat plot. It shows... This suggests...
+
+```{r}
+#| echo: false
+#| eval: true
+#| message: false
+#| warning: false
+#| label: fig-stanareyouokay
+#| fig-cap: "Checking the convergence of the MCMC algorithm"
+#| fig-subcap: ["Trace plot", "Rhat plot"]
+#| layout-ncol: 2
+
+plot(first_model, "trace")
+
+plot(first_model, "rhat")
+```
+
+
+
+\newpage
+
+
+# References

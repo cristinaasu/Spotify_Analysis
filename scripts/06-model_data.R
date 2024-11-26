@@ -24,14 +24,14 @@ analysis_data <- analysis_data %>%
     Artist = as.factor(Artist)
   )
 
-#### Split into training and testing datasets ####
+### Model Validation/Checking ###
+# Split into training and testing datasets
 set.seed(123)
 train_indices <- sample(seq_len(nrow(analysis_data)), size = 0.7 * nrow(analysis_data))
 training_data <- analysis_data[train_indices, ]
 testing_data <- analysis_data[-train_indices, ]
 
-#### Multiple Linear Regression Model (Version 1) ####
-# Fit the model
+# Fit the MLR - Version 1
 mlm_model <- lm(
   Valence ~ `Mean Temp` + Artist + Danceability + 
     Energy + Acousticness + Tempo,
@@ -52,8 +52,7 @@ mlm_r2 <- R2_Score(testing_data$Valence, mlm_testing_data$predicted_valence_lm)
 
 cat("RMSE:", mlm_rmse, "R-squared:", mlm_r2)
 
-#### Multiple Linear Regression Model (Version 2) ####
-# Fit the model
+# Fit the MLR - Version 2
 mlm_model2 <- lm(
   Valence ~ `Mean Temp` + Artist + Danceability + 
     Acousticness + Tempo,
@@ -69,8 +68,7 @@ mlm_2r2 <- R2_Score(testing_data$Valence, mlm_testing_data2$predicted_valence_lm
 
 cat("RMSE:", mlm_rmse2, "R-squared:", mlm_2r2)
 
-#### Multiple Linear Regression Model (Version 3) ####
-# Fit the model
+# Fit the MLR - Version 3
 mlm_model3 <- lm(
   Valence ~ `Mean Temp` + Danceability + 
     Acousticness + Tempo,
@@ -93,11 +91,25 @@ comparison <- tibble(
   R_Squared = c(mlm_r2, mlm_2r2, mlm_3r2)
 )
 
-comparison
+#### MLR - Version 1 - Entire Dataset ####
+# Based on the comparison results, the first model was selected for its performance, 
+# and predictions will now be made using the entire dataset.
+# Fit the MLR
+mlm_model_analysis <- lm(
+  Valence ~ `Mean Temp` + Artist + Danceability + 
+    Energy + Acousticness + Tempo,
+  data = analysis_data
+)
+
+# Make predictions 
+mlm_data_analysis <- analysis_data %>%
+  mutate(predicted_valence_lm = predict(mlm_model_analysis, newdata = analysis_data))
+
 
 #### Save Models ####
-saveRDS(mlm_model, "models/mlm_model.rds")
-saveRDS(mlm_model2, "models/mlm_model2.rds")
-saveRDS(mlm_model3, "models/mlm_model3.rds")
+saveRDS(mlm_model_analysis, "models/mlm_model.rds")
+#saveRDS(mlm_model, "models/mlm_model.rds")
+#saveRDS(mlm_model2, "models/mlm_model2.rds")
+#saveRDS(mlm_model3, "models/mlm_model3.rds")
 
 
