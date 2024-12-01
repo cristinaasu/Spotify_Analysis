@@ -13,7 +13,7 @@
 library(tidyverse)
 library(MLmetrics)  
 library(arrow)
-library(car)
+library(lm)
 
 #### Read data ####
 analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
@@ -33,8 +33,7 @@ testing_data <- analysis_data[-train_indices, ]
 
 # Fit the MLR - Version 1
 mlm_model <- lm(
-  Valence ~ `Mean Temp` + Artist + Danceability + 
-    Energy + Acousticness + Tempo,
+  Valence ~ `Scaled Mean Temp` + Artist + Danceability + Acousticness + `Scaled Tempo` + Date,
   data = training_data
 )
 
@@ -54,8 +53,8 @@ cat("RMSE:", mlm_rmse, "R-squared:", mlm_r2)
 
 # Fit the MLR - Version 2
 mlm_model2 <- lm(
-  Valence ~ `Mean Temp` + Artist + Danceability + 
-    Acousticness + Tempo,
+  Valence ~ `Scaled Mean Temp` + Artist + Danceability + 
+    Acousticness + `Scaled Tempo`,
   data = training_data
 )
 
@@ -70,8 +69,8 @@ cat("RMSE:", mlm_rmse2, "R-squared:", mlm_2r2)
 
 # Fit the MLR - Version 3
 mlm_model3 <- lm(
-  Valence ~ `Mean Temp` + Danceability + 
-    Acousticness + Tempo,
+  Valence ~ `Scaled Mean Temp` + Danceability + 
+    Acousticness + `Scaled Tempo`,
   data = training_data
 )
 
@@ -96,8 +95,7 @@ comparison <- tibble(
 # and predictions will now be made using the entire dataset.
 # Fit the MLR
 mlm_model_analysis <- lm(
-  Valence ~ `Mean Temp` + Artist + Danceability + 
-    Energy + Acousticness + Tempo,
+  Valence ~ `Scaled Mean Temp` + Artist + Danceability + Acousticness + `Scaled Tempo`,
   data = analysis_data
 )
 
@@ -105,11 +103,8 @@ mlm_model_analysis <- lm(
 mlm_data_analysis <- analysis_data %>%
   mutate(predicted_valence_lm = predict(mlm_model_analysis, newdata = analysis_data))
 
-
 #### Save Models ####
 saveRDS(mlm_model_analysis, "models/mlm_model.rds")
-#saveRDS(mlm_model, "models/mlm_model.rds")
-#saveRDS(mlm_model2, "models/mlm_model2.rds")
-#saveRDS(mlm_model3, "models/mlm_model3.rds")
+
 
 

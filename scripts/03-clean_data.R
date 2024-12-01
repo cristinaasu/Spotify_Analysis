@@ -56,7 +56,7 @@ merged_data_analysis <- top50_features_data %>%
 analysis_data <- merged_data_analysis %>%
   select(
     artist_names, track_name, valence, avg_max_temp, avg_min_temp, avg_mean_temp, 
-    danceability, energy, acousticness, tempo, date
+    danceability, acousticness, tempo, date
   ) %>%
   rename(
     Artist = artist_names,
@@ -66,11 +66,14 @@ analysis_data <- merged_data_analysis %>%
     `Min Temp` = avg_min_temp,
     `Mean Temp` = avg_mean_temp,
     Danceability = danceability,
-    Energy = energy,
     Acousticness = acousticness,
     Tempo = tempo, 
     Date = date
-  ) 
+  ) %>%
+  mutate(
+    `Scaled Mean Temp` = scale(`Mean Temp`),
+    `Scaled Tempo` = scale(Tempo)
+  )
 
 # Check for missing values
 missing_values <- analysis_data %>%

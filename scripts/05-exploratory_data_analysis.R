@@ -20,12 +20,11 @@ analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 # Summary statistics for numerical variables
 numeric_summary <- analysis_data %>%
   reframe(
-    Variable = c("Valence", "Mean Temp", "Danceability", "Energy", "Acousticness", "Tempo"),
+    Variable = c("Valence", "Mean Temp", "Danceability", "Acousticness", "Tempo"),
     Mean = c(
       mean(Valence, na.rm = TRUE),
       mean(`Mean Temp`, na.rm = TRUE),
       mean(Danceability, na.rm = TRUE),
-      mean(Energy, na.rm = TRUE),
       mean(Acousticness, na.rm = TRUE),
       mean(Tempo, na.rm = TRUE)
     ),
@@ -33,7 +32,6 @@ numeric_summary <- analysis_data %>%
       sd(Valence, na.rm = TRUE),
       sd(`Mean Temp`, na.rm = TRUE),
       sd(Danceability, na.rm = TRUE),
-      sd(Energy, na.rm = TRUE),
       sd(Acousticness, na.rm = TRUE),
       sd(Tempo, na.rm = TRUE)
     ),
@@ -41,7 +39,6 @@ numeric_summary <- analysis_data %>%
       min(Valence, na.rm = TRUE),
       min(`Mean Temp`, na.rm = TRUE),
       min(Danceability, na.rm = TRUE),
-      min(Energy, na.rm = TRUE),
       min(Acousticness, na.rm = TRUE),
       min(Tempo, na.rm = TRUE)
     ),
@@ -49,7 +46,6 @@ numeric_summary <- analysis_data %>%
       max(Valence, na.rm = TRUE),
       max(`Mean Temp`, na.rm = TRUE),
       max(Danceability, na.rm = TRUE),
-      max(Energy, na.rm = TRUE),
       max(Acousticness, na.rm = TRUE),
       max(Tempo, na.rm = TRUE)
     )
@@ -83,17 +79,7 @@ ggplot(analysis_data, aes(x = Danceability)) +
   ) +
   theme_minimal()
 
-# Plot 5: Histogram for Energy
-ggplot(analysis_data, aes(x = Energy)) +
-  geom_histogram(binwidth = 0.05, fill = "darkgreen", color = "black", alpha = 0.7) +
-  labs(
-    title = "Distribution of Energy",
-    x = "Energy Level",
-    y = "Frequency"
-  ) +
-  theme_minimal()
-
-# Plot 6: Histogram for Acousticness
+# Plot 5: Histogram for Acousticness
 ggplot(analysis_data, aes(x = Acousticness)) +
   geom_histogram(binwidth = 0.05, fill = "purple", color = "black", alpha = 0.7) +
   labs(
@@ -103,15 +89,15 @@ ggplot(analysis_data, aes(x = Acousticness)) +
   ) +
   theme_minimal()
 
-# Plot 7: Visualize all three distributions in a single chart for comparison 
+# Plot 6: Visualize distributions in a single chart for comparison 
 analysis_data %>%
-  select(Danceability, Energy, Acousticness) %>%
+  select(Danceability, Acousticness) %>%
   pivot_longer(cols = everything(), names_to = "Variable", values_to = "Value") %>%
   ggplot(aes(x = Value, fill = Variable)) +
   geom_histogram(binwidth = 0.05, alpha = 0.6, position = "identity", color = "black") +
   facet_wrap(~Variable, scales = "free") +
   labs(
-    title = "Distribution of Danceability, Energy, and Acousticness",
+    title = "Distribution of Danceability and Acousticness",
     x = "Value",
     y = "Frequency"
   ) +
@@ -119,7 +105,7 @@ analysis_data %>%
   theme(legend.position = "none")
 
 
-# Plot 8: Relationship between valence and danceability
+# Plot 7: Relationship between valence and danceability
 ggplot(analysis_data, aes(x = Valence, y = Danceability)) +
   geom_hex(bins = 20) +
   scale_fill_gradient(low = "lightblue", high = "darkblue") +
@@ -131,7 +117,7 @@ ggplot(analysis_data, aes(x = Valence, y = Danceability)) +
   ) +
   theme_minimal()
 
-# Plot 9: Relationship between valence vs temperature
+# Plot 8: Relationship between valence vs temperature
 analysis_data %>%
   mutate(Temp_Range = cut(`Mean Temp`, breaks = seq(0, 25, by = 5))) %>%
   ggplot(aes(x = Temp_Range, y = Valence, fill = after_stat(count))) + # Updated notation here
@@ -147,7 +133,7 @@ analysis_data %>%
     "text", x = 1, y = 0.05, label = "No data in this region", color = "darkred", size = 2.5
   )
 
-# Plot 10: Average Danceability by Artist - Top 5
+# Plot 9: Average Danceability by Artist - Top 5
 # Calculate mean danceability for each artist and filter the top 5
 top_5_artists <- analysis_data %>%
   group_by(Artist) %>%
@@ -167,7 +153,7 @@ ggplot(top_5_artists, aes(x = reorder(Artist, -Mean_Danceability), y = Mean_Danc
   theme(legend.position = "none") +
   coord_flip()
 
-# Plot 11: Average Temperature by Artist
+# Plot 10: Average Temperature by Artist
 # Calculate mean temperature for each artist
 artist_temp <- analysis_data %>%
   group_by(Artist) %>%
