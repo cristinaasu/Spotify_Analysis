@@ -19,7 +19,30 @@ library(arrow)
 
 #### Obtain Top 50 Data Features ####
 # Load data
-raw_top50 <- read.csv("data/01-raw_data/top50_canada.csv")
+# I downloaded the Daily Top Songs in Canada from Spotify Charts Website 
+# (https://charts.spotify.com/charts/view/regional-global-daily/latest) 
+# and save them into one folder `top50_daily_2024` under data.
+data_dir <- "data/01-raw_data/top50_daily_2024"
+
+# List all CSV files in the directory
+csv_files <- list.files(data_dir, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to read and filter each CSV file
+read_and_filter <- function(file) {
+  # Read the file
+  df <- read.csv(file)
+  
+  # Filter to include only the Top 50 songs (assuming a 'Rank' column exists)
+  df <- df %>% filter(rank <= 50)
+  
+  # Add a column for the date (assuming the filename includes the date)
+  df$date <- gsub(".*([0-9]{4}-[0-9]{2}-[0-9]{2}).*", "\\1", basename(file))
+  
+  return(df)
+}
+
+# Apply the function to all files and combine the results
+raw_top50 <- lapply(csv_files, read_and_filter) %>% bind_rows()
 
 # Extract the numerical part of the URI
 raw_top50 <- raw_top50 %>%
@@ -64,8 +87,29 @@ saveRDS(top50_features_data, "data/01-raw_data/top50_features_data.rds")
 # "VANCOUVER HARBOUR CS" for Vancouver, "EDMONTON BLATCHFORD" for Edmonton, 
 # "CALGARY INT'L CS" for Calgary, "OTTAWA CDA RCS" for Ottawa, "TORONTO CITY" for Toronto, 
 # and "MCTAVISH" for Montreal. After configuring the settings, I executed the search by clicking "Go", 
-# then downloaded the daily weather data for each location. 
-# This dataset can be found in data/01-raw_data/weather_data.csv [in this file I added all the 6 files together]
+# then downloaded the daily weather data for each location and save them in one folder `dailyweather`under data.
+
+# Define the directory containing weather data files
+weather_data_dir <- "data/01-raw_data/dailyweather"
+
+# List all CSV files in the directory
+weather_files <- list.files(weather_data_dir, pattern = "\\.csv$", full.names = TRUE)
+
+# Function to read and standardize each weather file
+read_weather_data <- function(file) {
+  # Read the file
+  df <- read.csv(file, check.names = FALSE)
+  
+  # Add a column for the city (assuming city name is in the filename)
+  df$city <- gsub(".*([A-Za-z]+)_weather.*", "\\1", basename(file))
+  
+  # Return the data frame
+  return(df)
+}
+
+# Apply the function to all files and combine the results
+weather_data <- lapply(weather_files, read_weather_data) %>% bind_rows()
 
 #### Save data ####
-write_csv(top50_features_data, "data/02-analysis_data/top50_features_data.csv")
+write_csv(top50_features_data, "data/01-raw_data/top50_features_data.csv")
+write.csv(weather_data, "data/01-raw_data/weather_data.csv", row.names = FALSE)

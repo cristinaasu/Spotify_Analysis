@@ -14,7 +14,7 @@ library(arrow)
 
 #### Prepare Daily Weather data ####
 # Load data
-raw_weather <- read_csv("data/01-raw_data/weather_data.csv")
+raw_weather <- read_csv("data/01-raw_data/weather_data.csv", show_col_types = FALSE)
 
 # Extract City Names
 raw_weather <- raw_weather %>%
