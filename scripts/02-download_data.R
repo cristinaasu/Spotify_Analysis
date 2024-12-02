@@ -21,8 +21,8 @@ library(arrow)
 # Load data
 # I downloaded the Daily Top Songs in Canada from Spotify Charts Website 
 # (https://charts.spotify.com/charts/view/regional-global-daily/latest) 
-# and save them into one folder `top50_daily_2024` under data.
-data_dir <- "data/01-raw_data/top50_daily_2024"
+# and save them into one folder `dailytop_songs` under data.
+data_dir <- "data/01-raw_data/dailytop_songs"
 
 # List all CSV files in the directory
 csv_files <- list.files(data_dir, pattern = "\\.csv$", full.names = TRUE)
