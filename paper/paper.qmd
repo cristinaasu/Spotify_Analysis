@@ -728,7 +728,7 @@ This structured approach allows Spotify to capture meaningful trends in music co
 
 ## Weather Data Collection and Handling Process
 
-Environment and Climate Change Canada (ECCC), as detailed in @canada_climate_services, collects comprehensive weather and climate data through an extensive network of observation stations, satellite systems, and historical archives. These datasets form the foundation for climate analysis, weather forecasting, and research on environmental impacts, ensuring a robust and reliable basis for understanding Canada’s diverse climatic conditions.
+Environment and Climate Change Canada (ECCC), as detailed in @ECCC_technical_documentation, collects comprehensive weather and climate data through an extensive network of observation stations, satellite systems, and historical archives. These datasets form the foundation for climate analysis, weather forecasting, and research on environmental impacts, ensuring a robust and reliable basis for understanding Canada’s diverse climatic conditions.
 
 **Data Sources and Methodology**
 
