@@ -13,7 +13,7 @@ The repository is organized as follows:
 - `data/raw_data`: Contains the raw data as obtained from Spotify Charts and Government of Canada's Climate Weather website.
 - `data/analysis_data`: Contains the cleaned and processed dataset used in the analysis.
 - `models`: Contains fitted models, including code for training and validation.
-- `other`: Includes additional details, such as assistance from ChatGPT-4o and preliminary sketches.
+- `other`: Includes additional details, such as assistance from ChatGPT-4o, preliminary sketches, and datasheet.
 - `paper`: Contains files used to generate the paper, including Quarto documents and reference bibliography files, as well as PDFs of the final paper.
 - `scripts`: Contains the R scripts used to simulate, download, clean, test, analyze and model the data.
 
