@@ -4,102 +4,65 @@
 # Date: 19 November 2024
 # Contact: cristina.sulam@mail.utoronto.ca
 # License: MIT
-# Pre-requisites: 02-clean_data.R must have been run.
+# Pre-requisites: 
+#    - 02-clean_data.R must have been run.
+#    - Install `testthat`.
 # Any other information needed? None.
 
 #### Workspace setup ####
 library(tidyverse)
 library(arrow)
+library(testthat)
 
 analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
 
 
 #### Test data ####
-# Check if the dataset has the expected columns
-expected_columns <- c("Artist", "Song", "Valence", "Max Temp", "Min Temp", 
-                      "Mean Temp", "Danceability", "Energy", "Acousticness", "Tempo", "Date")
-
-if (all(names(analysis_data) %in% expected_columns)) {
-  message("Test Passed: The dataset has the correct columns.")
-} else {
-  stop("Test Failed: The dataset does not have the correct columns.")
-}
-
-# Check if all values in the 'Artist' column are non-missing and valid
-if (all(!is.na(analysis_data$Artist))) {
-  message("Test Passed: The 'Artist' column contains no missing values.")
-} else {
-  stop("Test Failed: The 'Artist' column contains missing values.")
-}
-
-# Check if all values in the 'Song' column are non-missing and valid
-if (all(!is.na(analysis_data$Song))) {
-  message("Test Passed: The 'Song' column contains no missing values.")
-} else {
-  stop("Test Failed: The 'Song' column contains missing values.")
-}
-
-# Check if Valence, Danceability, Energy, Acousticness, and Tempo are within their expected ranges
-if (all(analysis_data$Valence >= 0 & analysis_data$Valence <= 1)) {
-  message("Test Passed: Valence is within the expected range.")
-} else {
-  stop("Test Failed: Valence is outside the expected range.")
-}
-
-if (all(analysis_data$Danceability >= 0 & analysis_data$Danceability <= 1)) {
-  message("Test Passed: Danceability is within the expected range.")
-} else {
-  stop("Test Failed: Danceability is outside the expected range.")
-}
-
-if (all(analysis_data$Energy >= 0 & analysis_data$Energy <= 1)) {
-  message("Test Passed: Energy is within the expected range.")
-} else {
-  stop("Test Failed: Energy is outside the expected range.")
-}
-
-if (all(analysis_data$Acousticness >= 0 & analysis_data$Acousticness <= 1)) {
-  message("Test Passed: Acousticness is within the expected range.")
-} else {
-  stop("Test Failed: Acousticness is outside the expected range.")
-}
-
-if (all(analysis_data$Tempo >= 40 & analysis_data$Tempo <= 205)) {
-  message("Test Passed: Tempo is within the expected range.")
-} else {
-  stop("Test Failed: Tempo is outside the expected range.")
-}
+analysis_data_tes <- analysis_data %>%
+  select(-`Scaled Mean Temp`, -`Scaled Tempo`)
 
 
-# Check if Max Temp, Min Temp, and Mean Temp are within realistic ranges
-if (all(analysis_data$`Max Temp` >= -50 & analysis_data$`Max Temp` <= 50)) {
-  message("Test Passed: Max Temp is within a realistic range.")
-} else {
-  stop("Test Failed: Max Temp is outside a realistic range.")
-}
+test_that("Dataset has the correct columns", {
+  expected_columns <- c("Artist", "Song", "Valence", "Max Temp", "Min Temp", 
+                        "Mean Temp", "Danceability", "Acousticness", "Tempo", 
+                        "Date")
+  expect_setequal(names(analysis_data_tes), expected_columns)
+})
 
-if (all(analysis_data$`Min Temp` >= -50 & analysis_data$`Min Temp` <= 50)) {
-  message("Test Passed: Min Temp is within a realistic range.")
-} else {
-  stop("Test Failed: Min Temp is outside a realistic range.")
-}
+test_that("No missing values in critical columns", {
+  expect_true(all(!is.na(analysis_data_tes$Artist)), info = "The 'Artist' column contains missing values.")
+  expect_true(all(!is.na(analysis_data_tes$Song)), info = "The 'Song' column contains missing values.")
+})
 
-if (all(analysis_data$`Mean Temp` >= -50 & analysis_data$`Mean Temp` <= 50)) {
-  message("Test Passed: Mean Temp is within a realistic range.")
-} else {
-  stop("Test Failed: Mean Temp is outside a realistic range.")
-}
+test_that("Valence, Danceability, Acousticness, are within valid ranges", {
+  expect_true(all(analysis_data_tes$Valence >= 0 & analysis_data_tes$Valence <= 1), 
+              info = "Valence values are outside the range [0, 1].")
+  expect_true(all(analysis_data_tes$Danceability >= 0 & analysis_data_tes$Danceability <= 1), 
+              info = "Danceability values are outside the range [0, 1].")
+  expect_true(all(analysis_data_tes$Acousticness >= 0 & analysis_data_tes$Acousticness <= 1), 
+              info = "Acousticness values are outside the range [0, 1].")
+})
 
-# Check for any missing values in the dataset
-if (all(!is.na(analysis_data))) {
-  message("Test Passed: The dataset contains no missing values.")
-} else {
-  stop("Test Failed: The dataset contains missing values.")
-}
+test_that("Tempo is within the expected range", {
+  expect_true(all(analysis_data_tes$Tempo >= 40 & analysis_data_tes$Tempo <= 205), 
+              info = "Tempo values are outside the range [40, 205].")
+})
 
-# Check if Date values are valid and in the correct format
-if (all(!is.na(as.Date(analysis_data$Date, format = "%Y-%m-%d")))) {
-  message("Test Passed: All Date values are valid.")
-} else {
-  stop("Test Failed: There are invalid Date values.")
-}
+test_that("Temperatures are within realistic ranges", {
+  expect_true(all(analysis_data_tes$`Max Temp` >= -50 & analysis_data_tes$`Max Temp` <= 50), 
+              info = "Max Temp values are outside the range [-50, 50].")
+  expect_true(all(analysis_data_tes$`Min Temp` >= -50 & analysis_data_tes$`Min Temp` <= 50), 
+              info = "Min Temp values are outside the range [-50, 50].")
+  expect_true(all(analysis_data_tes$`Mean Temp` >= -50 & analysis_data_tes$`Mean Temp` <= 50), 
+              info = "Mean Temp values are outside the range [-50, 50].")
+})
+
+test_that("Dataset has no missing values", {
+  expect_true(all(!is.na(analysis_data_tes)), 
+              info = "The dataset contains missing values.")
+})
+
+test_that("Date values are valid", {
+  expect_true(all(!is.na(as.Date(analysis_data_tes$Date, format = "%Y-%m-%d"))), 
+              info = "There are invalid Date values in the dataset.")
+})
