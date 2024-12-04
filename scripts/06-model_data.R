@@ -6,14 +6,14 @@
 # Contact: cristina.sulam@mail.utoronto.ca
 # License: MIT
 # Pre-requisites: 
-#   - Install required libraries: `tidyverse`, `MLmetrics`, `arrow`.
+#   - Install required libraries: `tidyverse`, `MLmetrics`, `arrow`, `stats`.
 # Any other information needed? None.
 
 #### Workspace setup ####
 library(tidyverse)
 library(MLmetrics)  
 library(arrow)
-library(lm)
+library(stats)
 
 #### Read data ####
 analysis_data <- read_parquet("data/02-analysis_data/analysis_data.parquet")
@@ -99,6 +99,7 @@ mlm_model_analysis <- lm(
   data = analysis_data
 )
 
+modelsummary(mlm_model_analysis)
 # Make predictions 
 mlm_data_analysis <- analysis_data %>%
   mutate(predicted_valence_lm = predict(mlm_model_analysis, newdata = analysis_data))
