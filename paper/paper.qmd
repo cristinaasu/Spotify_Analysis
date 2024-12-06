@@ -948,7 +948,7 @@ The study found that high-arousal, positive music (e.g., energetic, danceable, a
 #| echo: false
 #| eval: true
 #| label: fig-assumptions
-#| fig-cap: "Residuals vs Fitted and Normal Q-Q Plot"
+#| fig-cap: Residuals vs Fitted and Normal Q-Q Plot
 #| warning: false
 #| fig-align: center
 #| fig.width: 5.5
