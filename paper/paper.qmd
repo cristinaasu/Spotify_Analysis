@@ -5,7 +5,7 @@ author: Cristina Su Lam
 thanks: "Code and data are available at: https://github.com/cristinaasu/Spotify_Analysis"
 date: today
 date-format: long
-abstract: "This study explores how musical features and temperature shape emotional perceptions of music, measured by valence—a scale capturing a track's positivity. Using Spotify’s top 50 Canadian charts and population-weighted mean temperatures from six major cities, we applied a multiple linear regression model. Danceability emerged as the strongest predictor of valence, with an effect size of 1.260, while scaled temperature had a smaller but significant effect of 0.007. These findings highlight the interplay between intrinsic audio features and environmental contexts in influencing listener sentiment, offering insights into music's emotional dynamics and practical applications for personalized playlists, mood-based marketing, and further research on cultural and environmental influences."
+abstract: "This study explores how musical features and temperature shape emotional perceptions of music, measured by valence—a scale capturing a track's positivity. Using Spotify’s top 50 Canadian charts and population-weighted mean temperatures from six major cities, we applied a multiple linear regression model. Danceability emerged as the strongest predictor of valence, with an effect size of 1.260, while scaled temperature had a smaller but significant effect of 0.007. These findings emphasize the interplay between intrinsic audio features and environmental contexts in influencing listener sentiment, providing practical applications for personalized playlists, mood-based marketing, and further research on cultural and environmental influences."
 toc: true
 fig_caption: yes
 number-sections: true
@@ -39,23 +39,23 @@ mlm_model <- readRDS("../models/mlm_model.rds")
 
 # Introduction {#sec-intro}
 
-Music is a deeply embedded and transformative part of people’s lives, offering experiences that range from solitary headphone listening on a chilly day to attending global live events. It fosters empathy, social bonding, and cultural understanding, connecting individuals across cultural and linguistic differences [@CLARKE201561]. A UK study by @anglada2023music revealed that musical preferences are influenced by weather; warmer temperatures encourage songs with high intensity and positive emotions, while increased rainfall sees a decline in their popularity. This underscores how weather significantly shapes the musical landscape.
+Music is a deeply embedded and transformative part of people’s lives, providing experiences that range from solitary headphone listening on a chilly day to attending global live events. It fosters empathy, social bonding, and cultural understanding, connecting individuals across cultural and linguistic differences [@CLARKE201561]. A UK study by @anglada2023music revealed that musical preferences are influenced by weather; warmer temperatures encourage songs with high intensity and positive emotions, while increased rainfall reduces their popularity. This underscores how weather significantly shapes the musical landscape.
 
-The digital age has provided unprecedented access to music data, with platforms like Spotify offering rich datasets on song characteristics [@spotifyr]. Inspired by the previous research, this study aims to bridge the gap by examining the interplay of musical and environmental factors on listener emotions within the Canadian context. Using valence—a metric measuring emotions from 0 (negative or sad) to 1 (positive or happy)—the study evaluates how these elements collectively shape listener experiences.
+The digital age has provided unmatched access to music data, with platforms like Spotify offering rich datasets on song characteristics [@spotifyr]. Inspired by the previous research, this study aims to bridge the gap by examining the interplay of musical and environmental factors on listener emotions within the Canadian context. Using valence—a metric measuring emotions from 0 (negative or sad) to 1 (positive or happy)—the study evaluates how these elements collectively shape listener experiences.
 
 Valence, the estimand of interest in this study, represents the true effect this research seeks to understand. While it itself is unobservable, this study estimates it through a structured analytical approach, ensuring that the methodology remains sharply focused on the central research question. As an abstract quantity, it captures the theoretical relationship independent of sample-specific variations, allowing the study to delineate true effects from noise and systematic biases inherent in observational data.
 
-Using a multiple linear regression framework, this study analyzed data from Spotify’s Top 50 Canadian charts, combined with temperature data from six major cities, spanning June to November 2024. Danceability emerged as the strongest predictor of valence, underscoring its dominant influence on listener emotions. Artist-specific effects, such as the positive contributions of Brenda Lee's tracks and the negative impact of Future's music, were also notable. Interestingly, temperature—despite being the primary variable of interest—had a relatively minor influence, suggesting that weather exerts a limited direct effect on valence. These findings highlight the need to integrate contextual and musical factors to design personalized recommendations and mood-based marketing strategies that resonate with diverse listener preferences.
+Using a multiple linear regression framework, this study analyzed data from Spotify’s Top 50 Canadian charts, combined with temperature data from six major cities, spanning June to November 2024. Danceability emerged as the strongest predictor of valence, underscoring its dominant influence on listener emotions. Artist-specific effects, such as the positive contributions of Brenda Lee's tracks and the negative impact of Future's music, were also notable. Interestingly, temperature—despite being the primary variable of interest—had a relatively minor influence, suggesting that weather exerts a limited direct effect on valence. These findings reinforce the need to integrate contextual and musical factors to design personalized recommendations and mood-based marketing strategies that resonate with diverse listener preferences.
 
-The remainder of this paper is structured as follows. @sec-data describes the dataset and measurement process, while @sec-model outlines the methodology and model validation. @sec-results presents the results, highlighting the key predictors of valence and their implications. Finally, @sec-discussion discusses the findings, limitations, and potential avenues for future research.
+The remainder of this paper is structured as follows. @sec-data describes the dataset and measurement process, while @sec-model outlines the methodology and model validation. @sec-results presents the results, highlighting the predictors of valence and their implications. Finally, @sec-discussion discusses the findings, limitations, and potential avenues for future research.
 
 # Data {#sec-data}
 
 ## Overview {#sec-overview}
 
-To analyze the relationship between song characteristics, temperature, and valence--data from Spotify and weather records from Canada's most populous cities were integrated. To be more specific, the dataset included daily Top 50 songs in Canada from Spotify Charts [@spotify_charts], covering the period from June 1, 2024, to November 16, 2024. Using the Spotify API [@spotifyr], features such as Valence, Danceability, Acousticness, and Tempo were retrieved. Concurrently, weather data was obtained from @historical_weather_gc for six major cities: Toronto, Montreal, Edmonton, Calgary, Ottawa, and Vancouver.
+To analyze the relationship between song characteristics, temperature, and valence--data from Spotify and weather records from Canada's most populous cities were integrated. Specifically, the dataset included daily Top 50 songs in Canada from Spotify Charts [@spotify_charts], covering the period from June 1, 2024, to November 16, 2024. Using the Spotify API [@spotifyr], features such as Valence, Danceability, Acousticness, and Tempo were retrieved. Concurrently, weather data was obtained from @historical_weather_gc for six major cities: Toronto, Montreal, Edmonton, Calgary, Ottawa, and Vancouver.
 
-Data cleaning was conducted in R [@citeR] using the tidyverse [@thereferencecanbewhatever] and arrow [@arrow] packages. The cities mentioned were selected due to their large populations, and a new numerical variable, Mean Temp, was created by weighting each city's mean daily temperature by its population density and dividing by the total population density. This weighting was applied to account for the varying influence of each city based on its population size, ensuring that the derived temperature better reflects the overall climate experienced by the majority of the population. The resulting dataset consists of 8,450 observations and includes key variables such as Valence, Danceability, Acousticness, Tempo, Temperature, and Artist. The dataset was thoroughly checked for missing or incomplete values, confirming that all entries were complete and suitable for analysis. A sample of the cleaned dataset is displayed in [@tbl-spotifysongs].
+Data cleaning was conducted in R [@citeR] using the tidyverse [@thereferencecanbewhatever] and arrow [@arrow] packages. The cities were selected for their large populations, and a new numerical variable, Mean Temp, was calculated by weighting each city's mean daily temperature by its population density and dividing by the total population density. This weighting was applied to account for the varying influence of each city based on its population size, ensuring that the derived temperature better reflects the overall climate experienced by the majority of the population. The final dataset consists of 8,450 observations and includes key variables such as Valence, Danceability, Acousticness, Tempo, Temperature, and Artist. The dataset was thoroughly checked for missing or incomplete values, confirming that all entries were complete and suitable for analysis. A sample of the cleaned dataset is displayed in [@tbl-spotifysongs].
 
 For visualization and analysis, the knitr [@knitr], ggplot2 [@ggplot2], and kableExtra [@kableExtra] packages were utilized to generate professional tables and visualizations, effectively enhancing the presentation of results.
 
@@ -86,11 +86,11 @@ analysis_data |>
   column_spec(3:8, width = "1.25cm") 
 ```
 
-[@tbl-summary] presents the summary statistics of the numerical variables, revealing key insights into the dataset's characteristics and patterns. Valence, ranging from 0 to 1, spans 0.036 to 0.981 with a mean of 0.532, reflecting an overall moderate mood among tracks. Mean Temperature, calculated as a population-weighted average across major Canadian cities, has a mean of 16.9°C, with values spanning from 3.5°C to 24.8°C, showcasing the climatic variation during the study period.
+[@tbl-summary] provides summary statistics of the numerical variables, highlighting key patterns in the dataset. Valence, a measure of emotional positivity ranging from 0 to 1, spans 0.036 to 0.981, with a mean of 0.532, indicating a generally moderate mood across tracks. Mean Temperature, calculated as a population-weighted average for major Canadian cities, averages 16.9°C and ranges from 3.5°C to 24.8°C, reflecting climatic variation during the study period.
 
-Danceability and Acousticness, both measured on a 0 to 1 scale, highlight contrasting patterns. Danceability values range from 0.234 to 0.943, with a mean of 0.632, indicating that most songs are moderately to highly danceable. Acousticness, ranging from 0.000 to 0.968, has a lower mean of 0.228, suggesting that non-acoustic tracks---those with more electronic or synthetic instrumentation---dominate the dataset.
+Danceability and Acousticness, also on a 0 to 1 scale, reveal contrasting trends. Danceability ranges from 0.234 to 0.943, with a mean of 0.632, suggesting most tracks are moderately to highly danceable. In contrast, Acousticness ranges from 0.000 to 0.968, with a mean of 0.228, indicating that tracks with electronic or synthetic instrumentation are more prevalent.
 
-Finally, Tempo, measured in beats per minute (BPM), has a mean of 126 BPM, with a wide range from 48.7 BPM for slower tracks to 203.8 BPM for faster ones. This diversity in tempo underscores the variety of musical styles, forming a robust basis for exploring their relationship with valence.
+Tempo, measured in beats per minute (BPM), averages 126 BPM, with a wide range from 48.7 BPM for slower tracks to 203.8 BPM for faster ones. This diversity in tempo reflects a broad mix of musical styles, providing a strong foundation for examining their relationship with valence.
 
 ```{r}
 #| label: tbl-summary
@@ -141,7 +141,7 @@ kable(summary_table, format = "pipe")
 
 ## Measurement
 
-As noted in @sec-overview, the weather data originates from @historical_weather_gc, which collects meteorological observations from a comprehensive network of weather stations across the country. These stations measure key variables such as temperature, precipitation, and wind speed using standardized instruments and methodologies. Data is captured hourly or daily, depending on the station, and is validated through automated quality control processes and manual verification. This rigorous approach ensures reliable and precise measurements that meet international meteorological standards. In the context of this analysis, one weather station per city was selected based on relevance and proximity; additional details on this selection process are provided in @sec-appendix-a.
+As described in @sec-overview, weather data was sourced from @historical_weather_gc, which collects meteorological observations via a network of weather stations across Canada. These stations record variables such as temperature, precipitation, and wind speed, employing standardized instruments and methodologies. Data is captured hourly or daily, depending on the station, and is validated through automated quality control processes and manual verification. This rigorous approach ensures reliable and precise measurements that meet international meteorological standards. In the context of this analysis, one weather station per city was selected based on relevance and proximity; additional details on this selection process are provided in @sec-appendix-a.
 
 Similarly, the music data originates from Spotify Charts [@spotify_charts], which rank the most-streamed songs in a given region daily. These rankings are compiled by aggregating anonymized user streaming data across its platform. Streams are verified to ensure authenticity, eliminating artificial plays generated by bots or fraudulent activity. Additionally, Spotify employs machine learning models to analyze the audio features of each song, such as Valence, Danceability, Acousticness, and Tempo. These features are derived from the acoustic and digital signal processing of tracks, providing a quantitative representation of each song's characteristics.
 
@@ -208,7 +208,7 @@ kable(lowest_valence_songs_unique, col.names = c("Song", "Artist", "Valence"))
 
 -   **Mean Temperature**
 
-[@fig-temp] shows the average temperature over time, demonstrating a seasonal decline from approximately 25°C in the summer to below 5°C in late autumn. This pattern aligns with expected seasonal transitions in Canada and is further supported by [@tbl-summary], where the Mean Temperature averages 16.9°C with a standard deviation of 5.298°C. This notable variability provides an opportunity to investigate potential correlations between environmental factors, such as weather, and shifts in musical preferences reflected in Valence.
+[@fig-temp] shows the average temperature over time, demonstrating a seasonal decline from approximately 25°C in the summer to below 5°C in late autumn. This pattern aligns with expected seasonal transitions in Canada and is further supported by [@tbl-summary], where the Mean Temperature averages 16.9°C with a standard deviation of 5.298°C. This significant variability provides an opportunity to investigate potential correlations between environmental factors, such as weather, and shifts in musical preferences reflected in Valence.
 ```{r}
 #| label: fig-temp
 #| fig-cap: Average Temperature from June to November 2024
@@ -227,7 +227,7 @@ ggplot(analysis_data, aes(x = Date, y = `Mean Temp`)) +
 \newpage
 -   **Artist**
 
-The variable Artist reveals intriguing patterns in the dataset. Displayed in [@fig-artist], the top 10 artists, led by Sabrina Carpenter and Zach Bryan, contributed the highest number of entries to the dataset, with their songs appearing repeatedly in the daily Top 50 rankings, each exceeding 600 occurrences. This underscores their strong presence on the charts during the study period. However, despite their prominence, their songs do not feature in [@tbl-highest] or [@tbl-lowest]. In contrast, artists like Chappell Roan and Billie Eilish reflect a broader emotional range, appearing in the highest and lowest Valence categories, respectively. Hozier, contributing the fewest entries among the Top 10, stands out for appearing in [@tbl-highest], showcasing the emotional positivity of some of his music despite a smaller overall presence.
+The variable Artist reveals noteworthy patterns in the dataset. Displayed in [@fig-artist], the top 10 artists, led by Sabrina Carpenter and Zach Bryan, contributed the highest number of entries to the dataset, with their songs appearing repeatedly in the daily Top 50 rankings, each exceeding 600 occurrences. This highlights their strong presence on the charts during the study period. However, despite their prominence, their songs do not feature in [@tbl-highest] or [@tbl-lowest]. In contrast, artists like Chappell Roan and Billie Eilish reflect a broader emotional range, appearing in the highest and lowest Valence categories, respectively. Hozier, contributing the fewest entries among the Top 10, stands out for appearing in [@tbl-highest], showcasing the emotional positivity of some of his music despite a smaller overall presence.
 ```{r}
 #| label: fig-artist
 #| fig-cap: Sabrina Carpenter and Zach Bryan leads the Top 10 artists
@@ -249,10 +249,10 @@ ggplot(top_artists, aes(x = reorder(Artist, -n), y = n)) +
   theme_minimal() +
   theme(axis.text.x = element_text(hjust = 0.5, size = 6))
 ```
-
+\newpage
 -   **Tempo**
 
-The distribution of tempo values, as depicted in [@fig-tempo], shows a roughly normal shape, with most tracks falling between 100 and 130 beats per minute (BPM) and peaking around 120 BPM. This aligns with findings that today's popular music often falls within the 100–140 BPM range [@masterclass_bpm], highlighting rhythmic patterns that resonate with mainstream listener preferences.
+The distribution of tempo values, as depicted in [@fig-tempo], shows a roughly normal shape, with most tracks falling between 100 and 130 beats per minute (BPM) and peaking around 120 BPM. This aligns with findings that today's popular music often falls within the 100–140 BPM range [@masterclass_bpm], emphasizing rhythmic patterns that resonate with mainstream listener preferences.
 
 In addition, the distribution reveals outliers on both ends of the spectrum, with slower tempos below 60 BPM and faster tempos above 180 BPM representing niche genres or unique musical styles.
 
@@ -273,11 +273,11 @@ ggplot(analysis_data, aes(x = Tempo)) +
 \newpage
 -   **Danceability and Acousticness**
 
-The [@fig-diff] below highlights distinct patterns in the distributions of Danceability and Acousticness.
+The [@fig-diff] below illustrates distinct patterns in the distributions of Danceability and Acousticness.
 
-Acousticness displays a strongly right-skewed distribution, with most values concentrated near 0, reaffirming the prevalence of non-acoustic tracks in the dataset as noted in [@sec-overview]. This pattern aligns with its low mean of 0.228 and relatively high variability, as shown in [@tbl-summary], capturing a mix of purely electronic tracks and a smaller presence of acoustic elements.
+Acousticness displays a strongly right-skewed distribution, with most values concentrated near 0, demonstrating the prevalence of non-acoustic tracks in the dataset as noted in [@sec-overview]. This pattern aligns with its low mean of 0.228 and relatively high variability, as shown in [@tbl-summary], capturing a mix of purely electronic tracks and a smaller presence of acoustic elements.
 
-In contrast, Danceability demonstrates a more uniform distribution, peaking between 0.6 and 0.8. With a higher mean of 0.632 and a standard deviation of 0.134, this indicates that the majority of tracks are moderately to highly danceable. This distribution underscores the dataset's emphasis on popular music, where rhythmic appeal and danceability are often prioritized.
+In contrast, Danceability demonstrates a more uniform distribution, peaking between 0.6 and 0.8. With a higher mean of 0.632 and a standard deviation of 0.134, this indicates that the majority of tracks are moderately to highly danceable. This distribution reflects the dataset's focus on popular music, where rhythmic appeal and danceability are often emphasized.
 
 ```{r}
 #| label: fig-diff
@@ -308,8 +308,7 @@ analysis_data %>%
 
 -   **Valence vs. Temperature**
 
-The heatmap in [@fig-heatmap] illustrates that higher temperatures (20-25°C) are associated with a greater frequency of tracks exhibiting moderately positive valence values, clustering around 0.5-0.75. In contrast, at lower temperatures (5-15°C), songs are distributed more evenly between positive and negative valence values. Notably, the highest frequency is observed at a valence of approximately 0.25 when temperatures range between 15-20°C. The absence of data in the lowest temperature range (0-5°C) reflects a limitation of the dataset rather than an actual trend.
-\newpage
+The heatmap in [@fig-heatmap] shows that higher temperatures (20-25°C) are linked to a greater frequency of tracks with moderately positive valence values, clustering around 0.5-0.75. In contrast, at lower temperatures (5-15°C), songs are distributed more evenly between positive and negative valence values. Interestingly, the highest frequency appears at a valence of approximately 0.25 when temperatures range between 15-20°C. The absence of data in the lowest temperature range (0-5°C) reflects a limitation of the dataset rather than an actual pattern.
 ```{r}
 #| label: fig-heatmap
 #| fig-cap: Higher temperatures align with positive valence values, while lower temperatures show a wider spread in emotional tones.
@@ -340,7 +339,7 @@ analysis_data %>%
 
 -   **Valence vs. Artist**
 
-The chart in [@fig-avgvalence] highlights notable contrasts in the emotional tone of music produced by the Top 10 artists. Hozier, Tommy Richman, and Chappell Roan stand out with the highest average Valence scores, suggesting their tracks lean toward more positive and uplifting moods. This trend aligns with their reputations for creating emotionally resonant music. Conversely, Kendrick Lamar and Zach Bryan, who rank lowest in average Valence, demonstrate a preference for deeper or more introspective themes, reflecting their storytelling-driven styles.
+The chart in [@fig-avgvalence] shows distinct contrasts in the emotional tone of music produced by the Top 10 artists. Hozier, Tommy Richman, and Chappell Roan stand out with the highest average Valence scores, indicating their tracks lean toward more positive and uplifting moods. This pattern aligns with their reputations for creating emotionally evocative music. On the other hand, Kendrick Lamar and Zach Bryan, who rank lowest in average Valence, reflect a focus on deeper or more introspective themes, consistent with their storytelling-driven styles.
 \newpage
 ```{r}
 #| label: fig-avgvalence
@@ -373,11 +372,9 @@ ggplot(top_artists, aes(x = reorder(Artist, avg_valence), y = avg_valence, fill 
 
 # Model {#sec-model}
 
-## Overview
+This section presents a multiple linear regression (MLR) model to predict song valence based on audio features and contextual factors. It examines how danceability, acousticness, scaled tempo, scaled mean temperature, and artist-specific effects influence valence, providing a structured approach for analyzing these relationships.
 
-This section presents a multiple linear regression (MLR) model to predict song valence based on audio features and contextual factors. It evaluates how danceability, acousticness, scaled tempo, scaled mean temperature, and artist-specific effects influence valence, offering a clear framework for analyzing these relationships.
-
-The analysis utilized the R packages stats [@citeR], MLmetrics [@MLmetrics], and car [@car]. The stats package enabled MLR modeling with the `lm` function, while MLmetrics calculated RMSE and R-squared for model evaluation. The car package assessed multicollinearity using Variance Inflation Factors (VIF).
+The analysis utilized the R packages, stats [@citeR], MLmetrics [@MLmetrics], and car [@car]. The stats package supported MLR modeling with the `lm` function, while MLmetrics calculated RMSE and R-squared for model evaluation. The car package tested for multicollinearity using Variance Inflation Factors (VIF).
 
 ## Model Structure
 
@@ -401,15 +398,15 @@ y_i &= \beta_0 + \beta_1 (\text{Scaled Mean Temp})_i + \beta_2 (\text{Artist})_i
 
 In constructing the model, careful consideration was given to selecting predictors that accurately capture the relationships influencing song valence:
 
--   *Scaled Mean Temperature*: Represents the influence of environmental factors on emotional responses to music. Scaling normalizes its range for better interpretability and comparability across predictors.
+-   *Scaled Mean Temperature*: Represents environmental effects on emotional responses to music. Scaling normalizes its range, aiding interpretability and comparability with other predictors.
 
--   *Artist*: Captures the unique stylistic and emotional contributions of individual artists, as certain artists consistently produce music associated with higher or lower valence.
+-   *Artist*: Accounts for individual stylistic influences, as certain artists consistently produce music associated with higher or lower valence.
 
--   *Danceability*: Captures a song's rhythm and energy, with higher values often evoking happiness and positivity, thereby increasing valence.
+-   *Danceability*: Captures rhythm and energy, with higher values often linked to more positive emotions, thereby increasing valence.
 
--   *Acousticness*: Higher acousticness often linked to calmer, introspective tones that may lower valence, while lower acousticness corresponds to more electronic or dynamic tracks with higher positivity.
+-   *Acousticness*: Reflects the degree of acoustic elements in a track. Higher acousticness aligns with calmer tones that may lower valence, while lower acousticness corresponds to dynamic, upbeat tracks.
 
--   *Scaled Tempo*: Reflects a song's speed, influencing its energy and emotional intensity, with faster tempos often enhancing valence. Scaling ensures consistency with other predictors, like Scaled Mean Temperature.
+-   *Scaled Tempo*: Measures song speed, influencing energy and emotional tone. Faster tempos are often associated with higher valence. Scaling ensures consistency with other predictors, like Scaled Mean Temperature.
 
 ## Model Validation 
 
@@ -455,7 +452,7 @@ After not taking into consideration Artist, MLR 3 includes fewer predictors, it 
 
 ## Model Justification
 
-The choice of MLR 2 is justified by its balance of predictive performance and model simplicity. The `Date` variable was excluded because it is indirectly related to `Scaled Mean Temp`, which already captures the temporal context more meaningfully, making its inclusion redundant and unnecessarily complex. Furthermore, this model includes the key variables of interest outlined in @sec-variable, ensuring it addresses the research objectives effectively. Lastly, MLR 2 slightly outperforms MLR 1 in terms of RMSE and R-squared, further supporting its selection as the final model for predicting song valence.
+MLR 2 was selected for its balance of predictive accuracy and simplicity. The `Date` variable was excluded as its relationship with `Scaled Mean Temp` made it redundant, avoiding unnecessary complexity. By focusing on the key predictors outlined in @sec-variable, the model effectively addresses the research objectives. Additionally, MLR 2 demonstrated better RMSE and R-squared values compared to MLR 1, further supporting its choice as the final model for predicting song valence.
 
 ## Model Diagnostics
 
@@ -489,7 +486,7 @@ mlm_data_analysis <- analysis_data %>%
   mutate(predicted_valence_lm = predict(mlm_model, newdata = analysis_data))
 ```
 
-The results from the multiple linear regression (MLR) analysis reveal significant insights into the predictors of Valence, as shown in the coefficient summary in [@tbl-modelresults] and the corresponding coefficient plot [@fig-coef]. These findings build upon the descriptive patterns of the outcome and predictor variables, detailed in [@sec-analysis].
+The multiple linear regression (MLR) analysis identifies significant predictors of Valence, detailed in [@tbl-modelresults] and visualized in [@fig-coef]. These findings build upon the descriptive patterns of the outcome and predictor variables, detailed in [@sec-analysis].
 
 Danceability is identified as the strongest predictor, with a substantial positive coefficient 1.188 and a t-statistic of 75.469, demonstrating its strong and statistically significant association with higher Valence. Its adjusted R\^2 value of 0.081 indicates that this variable alone explains 8.1% of the variability in Valence, highlighting the central role of rhythmic and energetic qualities in shaping positive emotional responses to music. In [@fig-diff], the distribution of Danceability values, peaking at moderate to high levels, further underscores its prominence in popular tracks.
 
@@ -652,23 +649,23 @@ ggplot(filtered_model, aes(x = fct_reorder(term, estimate), y = estimate)) +
 
 # Discussion {#sec-discussion}
 
-This study applied a multiple linear regression (MLR) framework to explore the relationships between song characteristics, temperature, and valence, a metric representing emotional positivity in music. By integrating Spotify’s audio feature data with population-weighted mean temperature, the analysis quantified the contributions of key predictors, including danceability, acousticness, tempo, and artist-specific effects, to valence. Statistically significant effects were identified for most predictors, while redundant variables like date were excluded to ensure model parsimony. The chosen model demonstrated a predictive power of 86% (R-squared), effectively capturing the observed relationships while leaving room for further refinement.
+This study applied a multiple linear regression (MLR) framework to examine the relationships between song characteristics, temperature, and valence, a metric representing emotional positivity in music. By integrating Spotify’s audio feature data with population-weighted mean temperature, the analysis quantified the contributions of key predictors, including danceability, acousticness, tempo, and artist-specific effects, to valence. Statistically significant effects were identified for most predictors, while redundant variables like date were excluded to ensure model simplicity. The chosen model demonstrated a predictive power of 86% (R-squared), effectively capturing the observed relationships while leaving room for further refinement.
 
-The findings highlight how intrinsic audio features and contextual factors shape listeners' emotional perceptions of music. Danceability emerged as the most influential predictor, underscoring the strong resonance of rhythmic and energetic qualities with perceptions of positivity. Tempo and acousticness also exhibited statistically significant effects: faster tempos aligned with more positive emotional tones, while acoustic tracks correlated with calmer or introspective moods. These results deepen our understanding of how specific musical attributes elicit emotional responses.
+The findings illustrate how specific audio features and contextual factors shape listeners' emotional perceptions of music. Danceability emerged as the most influential predictor, highlighting the strong association of rhythmic and energetic qualities with perceptions of positivity. Tempo and acousticness also exhibited statistically significant effects: faster tempos aligned with more positive emotional tones, while acoustic tracks correlated with calmer or introspective moods. These results enhance our understanding of how musical attributes evoke emotional responses.
 
-Beyond intrinsic features, contextual factors such as mean temperature subtly influenced listeners’ musical experiences. Although its contribution was modest compared to predictors like danceability, the significant relationship between temperature and valence suggests that environmental contexts shape musical perception. This opens pathways for further exploration of how external factors like weather and cultural context influence musical preferences and emotional engagement.
+Beyond intrinsic features, contextual factors such as mean temperature subtly influenced listeners’ musical experiences. Although its contribution was modest compared to predictors like danceability, the significant relationship between temperature and valence suggests that environmental contexts influence musical perception. This opens pathways for further exploration of how external factors like weather and cultural background shape musical preferences and emotional engagement.
 
 ## Weaknesses of the Approach
 
 Despite the robustness of the MLR framework, several limitations remain. In @fig-assumptions, Residual and Q-Q plots revealed deviations from normality and heteroscedasticity, indicating that the model may not fully capture nonlinearities or interactions among variables. While the results are interpretable within the current framework, adopting alternative modeling techniques, such as generalized additive models, could better account for these complexities and improve predictive accuracy.
 
-The reliance on population-weighted mean temperature introduces potential biases by overlooking localized environmental variations. Although this metric accounts for major population centers, it does not fully represent the diverse conditions experienced by listeners across Canada. Incorporating city-level or real-time weather data could provide a more precise understanding of temperature’s impact on valence.
+The use of population-weighted mean temperature, though reflective of major population centers, overlooks localized environmental variations. This limitation reduces the precision of the temperature variable in capturing the diverse conditions experienced across Canada. Incorporating city-specific or real-time weather data could yield a more nuanced understanding of temperature's relationship with valence.
 
-The analysis of artist-specific effects is confined to the Top 50 songs in Canada, excluding contributions from less prominent artists. This limitation restricts the generalizability of the findings, as lesser-known artists may introduce stylistic and emotional themes not captured in this dataset. Expanding the scope to include a wider range of artists would provide a more comprehensive perspective.
+The focus on Top 50 songs excludes less prominent artists, limiting the generalizability of the findings. Lesser-known artists may introduce unique stylistic or emotional elements absent from the dataset. Expanding the scope to include a broader range of artists would provide a more representative analysis.
 
-Finally, the study’s six-month timeframe limits the ability to explore seasonal or long-term trends. While this period offers a snapshot of recent patterns, extending the dataset to include multiple years would allow for a deeper understanding of how musical preferences evolve over time and provide insights into potential seasonal influences.
+Finally, the six-month study period constrains the ability to explore seasonal or long-term trends. While this timeframe offers a snapshot of current patterns, extending the dataset to cover multiple years would enable a deeper examination of how musical preferences shift over time and identify potential seasonal effects.
 
-These constraints emphasize the importance of future research refining and expanding upon this approach by incorporating advanced models, broader datasets, and more granular contextual information to better capture the intricate interplay of music, context, and emotion.
+These limitations underscore the need for future research to refine and expand this approach by adopting more flexible models, incorporating broader datasets, and considering more granular contextual information to better understand the relationship between music, context, and emotion.
 
 ## Future Directions and Next Steps
 
@@ -688,11 +685,11 @@ Finally, adopting advanced modeling techniques, such as machine learning or Baye
 
 ## Spotify Data Collection and Handling Process
 
-Spotify collects streaming data from its extensive user base to generate insights into music consumption trends, as detailed in [@spotify_art]. A stream is recorded when a listener plays a song or music video for at least 30 seconds, and streams from downloaded content are included only if the listener goes online at least once every 30 days. These streams contribute to metrics such as all-time streams, release stream counts, and individual track plays. However, not all streams are chart-eligible; Spotify applies a proprietary formula to ensure that the charts accurately reflect legitimate user-driven activity.
+Spotify collects streaming data from its extensive user base to reflect music consumption patterns, as detailed in [@spotify_art]. A stream is recorded when a listener plays a song or music video for at least 30 seconds, and streams from downloaded content are included only if the listener goes online at least once every 30 days. These streams contribute to metrics such as all-time streams, release stream counts, and individual track plays. However, not all streams are chart-eligible; Spotify applies a proprietary formula to ensure that the charts accurately represent legitimate user-driven activity.
 
 **Data Validation and Fraud Prevention**
 
-Spotify employs advanced machine learning algorithms to identify and exclude streams suspected of being generated fraudulently, such as those created by bots or through artificial manipulation. This ensures that charts are not distorted and accurately represent genuine user preferences. Importantly, this filtering process does not affect the royalties paid to artists, maintaining financial transparency.
+Spotify uses machine learning algorithms to identify and exclude streams suspected of being generated fraudulently, such as those created by bots or through artificial manipulation. This process ensures that charts are not distorted and truly reflect genuine user activity. Importantly, this filtering does not affect the royalties paid to artists, maintaining financial transparency.
 
 **Types of Charts**
 
@@ -706,7 +703,7 @@ Daily charts are published by 6 PM EST the day after the charting period, while 
 
 **Handling Missing or Anomalous Data**
 
-Although Spotify does not disclose specific methodologies for addressing missing or incomplete data, it ensures data integrity by:
+Although Spotify does not disclose specific methodologies for addressing missing or incomplete data, it maintains reliability by:
 
 -   Filtering irregular streams using machine learning algorithms.
 -   Applying consistent validation thresholds, such as the 30-second playback rule.
@@ -714,9 +711,9 @@ Although Spotify does not disclose specific methodologies for addressing missing
 
 **Strengths**
 
--   Granular Insights: Spotify provides detailed data at global, regional, and city levels, enabling nuanced analysis of user behavior.
+-   Detailed Analysis: Spotify provides data at global, regional, and city levels, enabling refined examination of user behavior.
 -   Fraud Detection: Machine learning algorithms effectively exclude non-genuine streams, preserving the credibility of its charts.
--   Comprehensive Metrics: Including all-time streams, release-specific counts, and daily/weekly charts ensures a thorough view of music trends.
+-   Broad Metrics: Including all-time streams, release-specific counts, and daily/weekly charts ensures a thorough overview of music consumption patterns.
 
 **Weaknesses**
 
@@ -724,11 +721,11 @@ Although Spotify does not disclose specific methodologies for addressing missing
 -   Exclusion of Non-charting Songs: The analysis focuses on a limited selection of songs included in Spotify’s charts, such as the Top 100 for daily charts or the Top 50 for other charts, which restricts insights into underrepresented musical tastes and niche genres that do not appear in these rankings.
 -   Opaque Methodologies: Spotify's proprietary formula and data-cleaning processes are not publicly disclosed, hindering external validation.
 
-This structured approach allows Spotify to capture meaningful trends in music consumption while addressing challenges such as fraudulent activity and regional representation. However, improvements in methodological transparency and broader inclusion of non-charting songs could further enhance its analytical scope.
+This structured approach allows Spotify to capture significant patterns in music consumption while addressing challenges such as fraudulent activity and regional representation. However, improvements in methodological transparency and broader inclusion of non-charting songs could further expand its analytical utility.
 
 ## Weather Data Collection and Handling Process
 
-Environment and Climate Change Canada (ECCC), as detailed in @ECCC_technical_documentation, collects comprehensive weather and climate data through an extensive network of observation stations, satellite systems, and historical archives. These datasets form the foundation for climate analysis, weather forecasting, and research on environmental impacts, ensuring a robust and reliable basis for understanding Canada’s diverse climatic conditions.
+Environment and Climate Change Canada (ECCC), as detailed in @ECCC_technical_documentation, collects extensive weather and climate data through an extensive network of observation stations, satellite systems, and historical archives. These datasets form the foundation for climate analysis, weather forecasting, and research on environmental impacts, ensuring a thorough understanding Canada’s diverse climatic conditions.
 
 **Data Sources and Methodology**
 
@@ -765,7 +762,7 @@ Environment and Climate Change Canada (ECCC), as detailed in @ECCC_technical_doc
 
 **Strengths**
 
--   Comprehensive Coverage: Regularly updated data from a dense network of stations provides high temporal and spatial resolution.
+-   Wide-ranging Coverage: Regularly updated data from a dense network of stations provides high temporal and spatial resolution.
 -   Rigorous Quality Control: Automated and manual quality control ensures reliability, even for long-term climate studies.
 -   Accessibility: Data availability in multiple formats (point and gridded) supports diverse research and policy applications.
 -   Transparency and Metadata: Extensive documentation enhances usability and fosters transparency.
@@ -788,11 +785,11 @@ Environment and Climate Change Canada (ECCC), as detailed in @ECCC_technical_doc
 
 -   Peer-reviewed studies emphasize the importance of adjustments for urbanization and station relocations in preserving the integrity of long-term climate records.
 
-This detailed framework underscores the robustness and challenges of managing extensive weather datasets. It highlights the importance of methodological rigor, continuous refinement, and technological advancements to ensure the accuracy and relevance of climate data.
+This framework underscores the importance of methodological rigor, ongoing refinement, and technological advancements to ensure the accuracy and relevance of climate data while addressing associated challenges.
 
 ## Conclusion and Future Directions
 
-This appendix highlights the methodological rigor and challenges associated with integrating observational data from diverse sources. By addressing these challenges and leveraging advanced data validation techniques, the study lays the groundwork for future research exploring the intersection of music, environment, and emotion. Future studies could enhance representativeness by incorporating additional data sources, such as user surveys or alternative streaming platforms, to validate and expand upon these findings.
+This section emphasizes the structured approach and challenges associated with integrating observational data from diverse sources. By addressing these challenges and adopted enhanced data validation techniques, the study lays the groundwork for future research exploring the intersection of music, environment, and emotion. Future studies could enhance representativeness by incorporating additional data sources, such as user surveys or alternative streaming platforms, to validate and expand upon these findings.
 
 # Idealized Survey & Methodology - \$100K Budget
 
@@ -861,15 +858,15 @@ Questions structured to elicit insights on music consumption, emotional response
 
 ## Addressing Limitations
 
-This survey design tackles key limitations by broadening its geographic and demographic representation. By including all Canadian cities with weather stations, it ensures coverage beyond the usual focus on six major urban centers, offering a more comprehensive understanding of city-level variations in music preferences. Moreover, stratifying the sample by linguistic and cultural groups mitigates biases toward dominant cultural narratives, capturing a richer, more nuanced picture of regional and cultural influences on music consumption.
+This survey design tackles key limitations by broadening its geographic and demographic representation. By including all Canadian cities with weather stations, it ensures coverage beyond the usual focus on six major urban centers, offering a more thorough understanding of city-level variations in music preferences. Moreover, stratifying the sample by linguistic and cultural groups mitigates biases toward dominant cultural narratives, capturing a broader and detailed picture of regional and cultural influences on music consumption.
 
-Additionally, the year-long data collection period enables the analysis of seasonal and temporal trends, uncovering how weather impacts music consumption across different times of the year. The inclusion of granular contextual variables, such as cultural events, air quality, and commuting behavior, further enhances the analysis by addressing non-climatic factors that shape music preferences. This approach provides a holistic view of the interplay between weather and music consumption patterns. Additional Plots
+Additionally, the year-long data collection period enables the analysis of seasonal and temporal trends, uncovering how weather impacts music consumption across different times of the year. The inclusion of granular contextual variables, such as cultural events, air quality, and commuting behavior, strengthens the analysis by addressing non-climatic factors that shape music preferences. This approach provides a comprehensive view of the interplay between weather and music consumption patterns.
 
 ## Data Validation and Modeling
 
-To ensure data quality, the survey incorporates robust validation techniques. Attention checks, such as instructing respondents to select a specific answer, help identify inattentive responses. Logic checks are employed to catch inconsistencies, such as self-reported outdoor listening during severe weather conditions. Additionally, post-stratification weighting adjusts for demographic imbalances, ensuring the sample accurately reflects Canada’s population distribution and enhances the reliability of the findings.
+To ensure data quality, the survey incorporates robust validation techniques. Attention checks, such as instructing respondents to select a specific answer, help identify inattentive responses. Logic checks are employed to catch inconsistencies, such as self-reported outdoor listening during severe weather conditions. Additionally, post-stratification weighting adjusts for demographic imbalances, ensuring the sample accurately reflects Canada’s population distribution and increases the reliability of the findings.
 
-Advanced modeling approaches further refine the analysis by addressing complex relationships within the data. Bayesian Hierarchical Models capture city-level variability and nonlinear interactions, providing nuanced insights into regional differences. Machine learning models are also leveraged to predict how external factors like weather influence music preferences and emotional responses, enabling a deeper understanding of the interplay between climate and music consumption.
+Advanced modeling approaches further refine the analysis by addressing complex relationships within the data. Bayesian Hierarchical Models capture city-level variability and nonlinear interactions, providing detailed insights into regional differences. Machine learning models are also leveraged to predict how external factors like weather influence music preferences and emotional responses, enabling a deeper understanding of the interplay between climate and music consumption.
 
 ## Budget Breakdown
 
